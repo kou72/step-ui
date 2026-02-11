@@ -50,7 +50,7 @@ front/src/components/
 
 新しいコンポーネントを追加する場合:
 1. `neu/NewComponent.jsx` と `material/NewComponent.jsx` をそれぞれ作成
-2. 各 `neu/index.js`、`material/index.js` にエクスポートを追記
+2. **`neu/index.js`** と **`material/index.js`** の両方にエクスポートを追記
 3. `components/index.jsx` に `themed('NewComponent')` のラッパーを追加
 
 ### テーマ別スタイル指針

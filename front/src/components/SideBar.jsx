@@ -1,4 +1,5 @@
 import { ThemeSwitcher } from './ThemeSwitcher'
+import { S } from '../strings'
 
 // シールドアイコン (認証局 = 信頼・検証の象徴)
 const ShieldIcon = () => (
@@ -16,7 +17,7 @@ function CASection() {
         <ShieldIcon />
       </span>
       <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-500 tracking-widest uppercase">
-        CA
+        {S.sidebar.ca}
       </span>
     </div>
   )

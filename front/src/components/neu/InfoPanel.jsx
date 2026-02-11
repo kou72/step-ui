@@ -1,3 +1,5 @@
+import { S } from '../../strings'
+
 // Neumorphism: 表示専用 — CLAUDE.md ルール: 影なし、border-b で行区切り
 function Row({ label, value }) {
   return (
@@ -12,12 +14,12 @@ export function InfoPanel({ data, timestamp }) {
   return (
     <div className="mb-6">
       <div className="border-b border-slate-300 dark:border-slate-700">
-        <Row label="CA URL"          value={data?.ca_url} />
+        <Row label={S.info.caUrl}      value={data?.ca_url} />
       </div>
       <div className="border-b border-slate-300 dark:border-slate-700">
-        <Row label="HTTP ステータス" value={data?.http_status} />
+        <Row label={S.info.httpStatus} value={data?.http_status} />
       </div>
-      <Row label="取得時刻" value={timestamp} />
+      <Row label={S.info.fetchedAt}  value={timestamp} />
     </div>
   )
 }

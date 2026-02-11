@@ -1,3 +1,5 @@
+import { S } from '../../strings'
+
 // Material: 表示専用 — divide-y で行区切り
 function Row({ label, value }) {
   return (
@@ -11,9 +13,9 @@ function Row({ label, value }) {
 export function InfoPanel({ data, timestamp }) {
   return (
     <div className="divide-y divide-slate-200 dark:divide-slate-700 mb-6">
-      <Row label="CA URL"          value={data?.ca_url} />
-      <Row label="HTTP ステータス" value={data?.http_status} />
-      <Row label="取得時刻"         value={timestamp} />
+      <Row label={S.info.caUrl}      value={data?.ca_url} />
+      <Row label={S.info.httpStatus} value={data?.http_status} />
+      <Row label={S.info.fetchedAt}  value={timestamp} />
     </div>
   )
 }

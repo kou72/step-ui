@@ -1,4 +1,5 @@
 import { useTheme } from '../theme/ThemeContext'
+import { S } from '../strings'
 
 // Neu: 同心の丸み四角 (ソフトな立体層)
 const NeuIcon = () => (
@@ -80,7 +81,7 @@ export function ThemeSwitcher() {
         icon={dark ? <MoonIcon /> : <SunIcon />}
         checked={dark}
         onChange={toggleDark}
-        ariaLabel={`ダークモード: 現在 ${dark ? 'ON' : 'OFF'}`}
+        ariaLabel={S.aria.darkMode(dark)}
       />
 
       {/* テーマ切替: 現在の状態アイコン + トグル */}
@@ -88,7 +89,7 @@ export function ThemeSwitcher() {
         icon={isNeu ? <NeuIcon /> : <MaterialIcon />}
         checked={!isNeu}
         onChange={() => setTheme(isNeu ? 'material' : 'neu')}
-        ariaLabel={`テーマ切替: 現在 ${isNeu ? 'Neumorphism' : 'Material'}`}
+        ariaLabel={S.aria.theme(isNeu)}
       />
 
     </div>
