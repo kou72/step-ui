@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>step-ca ステータス</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 48px 16px;
+      min-height: 100vh;
+    }
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.12);
+      padding: 32px;
+      width: 100%;
+      max-width: 480px;
+    }
+    h1 { font-size: 1.25rem; margin-bottom: 24px; color: #222; }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+      font-size: .9rem;
+    }
+    .row:last-of-type { border-bottom: none; }
+    .label { color: #666; }
+    .value { color: #222; font-family: monospace; }
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: .8rem;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .badge-ok    { background: #d4edda; color: #155724; }
+    .badge-error { background: #f8d7da; color: #721c24; }
+    .badge-loading { background: #e2e3e5; color: #383d41; }
+    button {
+      margin-top: 24px;
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #0d6efd;
+      color: #fff;
+      font-size: .95rem;
+      cursor: pointer;
+    }
+    button:hover { background: #0b5ed7; }
+    button:disabled { background: #6c757d; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>step-ca ステータス</h1>
+    <div class="row">
+      <span class="label">ステータス</span>
+      <span class="badge badge-loading" id="badge">取得中…</span>
+    </div>
+    <div class="row">
+      <span class="label">CA URL</span>
+      <span class="value" id="ca-url">—</span>
+    </div>
+    <div class="row">
+      <span class="label">HTTP ステータス</span>
+      <span class="value" id="http-status">—</span>
+    </div>
+    <div class="row">
+      <span class="label">取得時刻</span>
+      <span class="value" id="timestamp">—</span>
+    </div>
+    <button id="btn" onclick="fetchStatus()">更新</button>
+  </div>
+
+  <script>
+    async function fetchStatus() {
+      const btn   = document.getElementById('btn');
+      const badge = document.getElementById('badge');
+
+      btn.disabled = true;
+      badge.className = 'badge badge-loading';
+      badge.textContent = '取得中…';
+
+      try {
+        const res  = await fetch('/api/status');
+        const data = await res.json();
+
+        badge.textContent = data.status === 'ok' ? 'OK' : 'ERROR';
+        badge.className   = 'badge ' + (data.status === 'ok' ? 'badge-ok' : 'badge-error');
+
+        document.getElementById('ca-url').textContent     = data.ca_url    ?? '—';
+        document.getElementById('http-status').textContent = data.http_status ?? '—';
+        document.getElementById('timestamp').textContent  =
+          new Date().toLocaleString('ja-JP', { hour12: false });
+      } catch (e) {
+        badge.className   = 'badge badge-error';
+        badge.textContent = 'ERROR';
+        document.getElementById('timestamp').textContent =
+          new Date().toLocaleString('ja-JP', { hour12: false });
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    fetchStatus();
+  </script>
+</body>
+</html>
