@@ -2,6 +2,7 @@ import { useTheme } from '../theme/ThemeContext'
 import * as Neu from './neu'
 import * as Material from './material'
 
+export { SideBar }       from './SideBar'
 export { ThemeSwitcher } from './ThemeSwitcher'
 
 function themed(name) {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { ThemeProvider, useTheme } from './theme/ThemeContext'
-import { Card, StatusBadge, InfoPanel, Button, ThemeSwitcher } from './components'
+import { Card, StatusBadge, InfoPanel, Button, SideBar } from './components'
 
 function StatusPage() {
   const { dark } = useTheme()
@@ -30,7 +30,7 @@ function StatusPage() {
 
   return (
     <div className={`${dark ? 'dark' : ''} bg-slate-200 dark:bg-slate-900 min-h-screen flex justify-center items-start pt-16 pl-24 pr-4`}>
-      <ThemeSwitcher />
+      <SideBar />
       <Card>
         <h1 className="text-lg font-semibold text-slate-700 dark:text-slate-200 tracking-wide mb-4">
           step-ca ステータス

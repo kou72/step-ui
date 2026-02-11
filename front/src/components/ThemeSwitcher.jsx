@@ -42,30 +42,28 @@ const MoonIcon = () => (
 const TRACK_SHADOW = 'inset 1px 1px 3px var(--neu-shadow-dark), inset -1px -1px 3px var(--neu-shadow-light)'
 const THUMB_SHADOW = '0 1px 3px rgba(0,0,0,0.22)'
 
-// 横型トグルスイッチ共通コンポーネント
-function ToggleRow({ leftIcon, rightIcon, checked, onChange, ariaLabel }) {
+// 横型トグルスイッチ — 左に現在の状態を示すアイコン1つ
+function ToggleRow({ icon, checked, onChange, ariaLabel }) {
   return (
     <div className="flex flex-row items-center gap-2">
-      <span className={`text-slate-500 dark:text-slate-400 transition-opacity duration-200 ${!checked ? 'opacity-100' : 'opacity-25'}`}>
-        {leftIcon}
+      <span className="text-slate-500 dark:text-slate-400 transition-all duration-200 w-5 flex justify-center">
+        {icon}
       </span>
       <button
         onClick={onChange}
         aria-label={ariaLabel}
-        className="relative w-10 h-5 rounded-full cursor-pointer"
-        style={{ background: '#cbd5e1', boxShadow: TRACK_SHADOW }}
+        className="relative w-10 h-5 rounded-full cursor-pointer bg-slate-300 dark:bg-slate-600"
+        style={{ boxShadow: TRACK_SHADOW }}
       >
         <div
-          className="absolute left-0.5 top-0.5 w-4 h-4 rounded-full bg-slate-100 dark:bg-slate-300 transition-transform duration-200"
+          className="absolute left-0.5 top-0.5 w-4 h-4 rounded-full bg-slate-100 dark:bg-slate-300"
           style={{
             transform: checked ? 'translateX(20px)' : 'translateX(0px)',
+            transition: 'transform 200ms cubic-bezier(0.4, 0, 0.2, 1)',
             boxShadow: THUMB_SHADOW,
           }}
         />
       </button>
-      <span className={`text-slate-500 dark:text-slate-400 transition-opacity duration-200 ${checked ? 'opacity-100' : 'opacity-25'}`}>
-        {rightIcon}
-      </span>
     </div>
   )
 }
@@ -75,28 +73,24 @@ export function ThemeSwitcher() {
   const isNeu = theme === 'neu'
 
   return (
-    <div className="fixed left-0 top-0 h-full w-24 bg-slate-200 dark:bg-slate-900 border-r border-slate-300/70 dark:border-slate-700/70 flex flex-col items-center justify-end pb-8 z-20">
-      <div className="flex flex-col items-center gap-5">
+    <div className="flex flex-col items-center gap-5">
 
-        {/* ダークモード: [☀️] [toggle] [🌙] */}
-        <ToggleRow
-          leftIcon={<SunIcon />}
-          rightIcon={<MoonIcon />}
-          checked={dark}
-          onChange={toggleDark}
-          ariaLabel={`ダークモード: 現在 ${dark ? 'ON' : 'OFF'}`}
-        />
+      {/* ダークモード: 現在の状態アイコン + トグル */}
+      <ToggleRow
+        icon={dark ? <MoonIcon /> : <SunIcon />}
+        checked={dark}
+        onChange={toggleDark}
+        ariaLabel={`ダークモード: 現在 ${dark ? 'ON' : 'OFF'}`}
+      />
 
-        {/* テーマ切替: [Neu] [toggle] [Material] */}
-        <ToggleRow
-          leftIcon={<NeuIcon />}
-          rightIcon={<MaterialIcon />}
-          checked={!isNeu}
-          onChange={() => setTheme(isNeu ? 'material' : 'neu')}
-          ariaLabel={`テーマ切替: 現在 ${isNeu ? 'Neumorphism' : 'Material'}`}
-        />
+      {/* テーマ切替: 現在の状態アイコン + トグル */}
+      <ToggleRow
+        icon={isNeu ? <NeuIcon /> : <MaterialIcon />}
+        checked={!isNeu}
+        onChange={() => setTheme(isNeu ? 'material' : 'neu')}
+        ariaLabel={`テーマ切替: 現在 ${isNeu ? 'Neumorphism' : 'Material'}`}
+      />
 
-      </div>
     </div>
   )
 }
