@@ -3,38 +3,22 @@ export const S = {
 
   // カード見出し
   page: {
-    status: 'step-ca ステータス',
-    config: 'CA設定',
+    ca:     'CA',
     init:   'CA初期化',
-  },
-
-  // 汎用ラベル
-  label: {
-    status: 'ステータス',
   },
 
   // ボタン
   btn: {
-    start:      'CA起動',
-    stop:       'CA停止',
-    refresh:    '更新',
-    refreshing: '取得中…',
-    init:       'CA初期化',
-    initing:    '初期化中…',
+    initOpen: '初期化',
+    init:     'CA初期化',
+    initing:  '初期化中…',
   },
 
   // ステータスバッジ
   badge: {
     loading: '取得中…',
-    ok:      'OK',
-    error:   'ERROR',
-  },
-
-  // ステータス情報パネル
-  info: {
-    caUrl:      'CA URL',
-    httpStatus: 'HTTP ステータス',
-    fetchedAt:  '取得時刻',
+    ok:      '起動中',
+    error:   '停止中',
   },
 
   // CA設定パネル

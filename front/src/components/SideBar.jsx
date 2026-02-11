@@ -1,4 +1,5 @@
 import { ThemeSwitcher } from './ThemeSwitcher'
+import { useTheme } from '../theme/ThemeContext'
 import { S } from '../strings'
 
 // シールドアイコン (認証局 = 信頼・検証の象徴)
@@ -24,8 +25,13 @@ function CASection() {
 }
 
 export function SideBar() {
+  const { theme } = useTheme()
+  const isNeu = theme === 'neu'
+  const bg = isNeu
+    ? 'bg-slate-200 dark:bg-slate-900 border-r border-slate-300/70 dark:border-slate-700/70'
+    : 'bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 shadow-sm'
   return (
-    <div className="fixed left-0 top-0 h-full w-24 bg-slate-200 dark:bg-slate-900 border-r border-slate-300/70 dark:border-slate-700/70 flex flex-col items-center justify-between py-8 px-3 z-20">
+    <div className={`fixed left-0 top-0 h-full w-24 flex flex-col items-center justify-between py-8 px-3 z-20 ${bg}`}>
 
       {/* 上部: CA セクション */}
       <CASection />

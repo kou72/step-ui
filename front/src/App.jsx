@@ -1,31 +1,25 @@
 import { useState, useEffect } from 'react'
 import { ThemeProvider, useTheme } from './theme/ThemeContext'
-import { Card, StatusBadge, InfoPanel, Button, InitPanel, ConfigPanel, SideBar } from './components'
+import { Card, StatusBadge, ConfigPanel, InitPanel, Button, SideBar } from './components'
+import { Modal } from './components/Modal'
 import { S } from './strings'
 
 function StatusPage() {
   const { dark } = useTheme()
-  const [data,      setData]      = useState(null)
-  const [status,    setStatus]    = useState('loading')
-  const [timestamp, setTimestamp] = useState(null)
-  const [loading,   setLoading]   = useState(false)
+  const [status,   setStatus]  = useState('loading')
+  const [loading,  setLoading] = useState(false)
   const [initError, setInitError] = useState(null)
   const [config,    setConfig]    = useState(null)
+  const [initOpen,  setInitOpen]  = useState(false)
 
+  // バックグラウンドポーリング用 — loading 状態を変更しない
   const fetchStatus = async () => {
-    setLoading(true)
-    setStatus('loading')
     try {
       const res  = await fetch('/api/status')
       const json = await res.json()
-      setData(json)
       setStatus(json.status === 'ok' ? 'ok' : 'error')
     } catch {
       setStatus('error')
-      setData(null)
-    } finally {
-      setTimestamp(new Date().toLocaleString('ja-JP', { hour12: false }))
-      setLoading(false)
     }
   }
 
@@ -35,13 +29,13 @@ function StatusPage() {
       const res  = await fetch('/api/ca/stop', { method: 'POST' })
       const json = await res.json()
       if (json.status === 'stopped' || json.status === 'not_running') {
-        fetchStatus()
+        await fetchStatus()
       } else {
         setStatus('error')
-        setLoading(false)
       }
     } catch {
       setStatus('error')
+    } finally {
       setLoading(false)
     }
   }
@@ -52,17 +46,16 @@ function StatusPage() {
       const res  = await fetch('/api/ca/start', { method: 'POST' })
       const json = await res.json()
       if (json.status === 'already_running') {
-        fetchStatus()
+        await fetchStatus()
       } else if (json.status === 'starting') {
         setStatus('loading')
-        setLoading(false)
         setTimeout(fetchStatus, 2000)
       } else {
         setStatus('error')
-        setLoading(false)
       }
     } catch {
       setStatus('error')
+    } finally {
       setLoading(false)
     }
   }
@@ -89,56 +82,58 @@ function StatusPage() {
       })
       const json = await res.json()
       if (json.status === 'ok') {
+        setInitOpen(false)
         fetchConfig()
         fetchStatus()
       } else {
         setInitError(json.message)
-        setLoading(false)
       }
     } catch {
       setInitError(S.init.err.generic)
+    } finally {
       setLoading(false)
     }
   }
 
-  useEffect(() => { fetchStatus(); fetchConfig() }, [])
+  const toggleCA = () => {
+    if (status === 'ok')    stopCA()
+    else if (status === 'error') startCA()
+  }
+
+  useEffect(() => {
+    fetchStatus()
+    fetchConfig()
+    const id = setInterval(fetchStatus, 2000)
+    return () => clearInterval(id)
+  }, [])
 
   return (
-    <div className={`${dark ? 'dark' : ''} bg-slate-200 dark:bg-slate-900 min-h-screen flex flex-wrap justify-center items-start gap-6 pt-16 pl-24 pr-4 pb-8`}>
+    <div className={`${dark ? 'dark' : ''} bg-slate-200 dark:bg-slate-900 min-h-screen flex justify-center items-start pt-16 pl-24 pr-4 pb-8`}>
       <SideBar />
       <Card>
-        <h1 className="text-lg font-semibold text-slate-700 dark:text-slate-200 tracking-wide mb-4">
-          {S.page.status}
-        </h1>
-        <div className="flex justify-between items-center px-1 py-3 mb-1 border-b border-slate-300 dark:border-slate-700">
-          <span className="text-slate-600 dark:text-slate-400 text-sm">{S.label.status}</span>
-          <StatusBadge status={status} />
-        </div>
-        <InfoPanel data={data} timestamp={timestamp} />
-        <div className="flex flex-col gap-2">
-          {status === 'error' && (
-            <Button onClick={startCA} disabled={loading}>{S.btn.start}</Button>
-          )}
-          {status === 'ok' && (
-            <Button onClick={stopCA} disabled={loading}>{S.btn.stop}</Button>
-          )}
-          <Button onClick={fetchStatus} disabled={loading}>
-            {loading ? S.btn.refreshing : S.btn.refresh}
+        {/* タイトル行: CA + ステータスバッジ(トグルボタン) + 初期化ボタン */}
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center gap-3">
+            <h1 className="text-lg font-semibold text-slate-700 dark:text-slate-200 tracking-wide">
+              {S.page.ca}
+            </h1>
+            <StatusBadge
+              status={status}
+              onClick={toggleCA}
+              disabled={status === 'loading' || loading}
+            />
+          </div>
+          <Button small onClick={() => { setInitError(null); setInitOpen(true) }}>
+            {S.btn.initOpen}
           </Button>
         </div>
-      </Card>
-      <Card>
-        <h2 className="text-lg font-semibold text-slate-700 dark:text-slate-200 tracking-wide mb-4">
-          {S.page.config}
-        </h2>
+
         <ConfigPanel config={config} />
       </Card>
-      <Card>
-        <h2 className="text-lg font-semibold text-slate-700 dark:text-slate-200 tracking-wide mb-4">
-          {S.page.init}
-        </h2>
+
+      <Modal open={initOpen} onClose={() => setInitOpen(false)} title={S.page.init}>
         <InitPanel onSubmit={initCA} loading={loading} error={initError} />
-      </Card>
+      </Modal>
     </div>
   )
 }

@@ -7,11 +7,19 @@ const map = {
   error:   { label: S.badge.error,   cls: 'bg-rose-500 text-white dark:bg-rose-600' },
 }
 
-export function StatusBadge({ status }) {
+export function StatusBadge({ status, onClick, disabled }) {
   const { label, cls } = map[status] ?? map.loading
-  return (
-    <span className={`px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${cls}`}>
-      {label}
-    </span>
-  )
+  const base = `px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${cls}`
+  if (onClick) {
+    return (
+      <button
+        onClick={onClick}
+        disabled={disabled}
+        className={`${base} transition-opacity hover:opacity-75 disabled:cursor-default disabled:opacity-100`}
+      >
+        {label}
+      </button>
+    )
+  }
+  return <span className={base}>{label}</span>
 }
