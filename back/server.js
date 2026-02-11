@@ -1,6 +1,7 @@
 'use strict';
 
 const https   = require('https');
+const http    = require('http');
 const fs      = require('fs');
 const path    = require('path');
 const express = require('express');
@@ -12,7 +13,7 @@ const CA_HOSTNAME = '192.168.11.143';
 const CA_PORT     = 443;
 const ROOT_CA     = fs.readFileSync('/home/mgmt/.step/certs/root_ca.crt');
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '..', 'front', 'dist')));
 
 app.get('/api/status', (_req, res) => {
   const opts = {
@@ -37,13 +38,8 @@ app.get('/api/status', (_req, res) => {
   probe.end();
 });
 
-const options = {
-  key:  fs.readFileSync('./srv.key'),
-  cert: fs.readFileSync('./srv.crt'),
-};
+const PORT = 3001;
 
-const PORT = 3000;
-
-https.createServer(options, app).listen(PORT, () => {
-  console.log(`HTTPS server listening on https://localhost:${PORT}`);
+http.createServer(app).listen(PORT, () => {
+  console.log(`HTTP server listening on http://localhost:${PORT}`);
 });
