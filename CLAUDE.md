@@ -6,8 +6,8 @@
 
 | 用途 | クラス | 説明 |
 |------|--------|------|
-| ページ背景 | `bg-gray-200` | 最も外側の背景 |
-| 領域・コンテナ | `bg-gray-100` | カード・パネル等の区画 |
+| ページ背景 | `bg-slate-200` | 最も外側の背景 |
+| 領域・コンテナ | `bg-slate-100` | カード・パネル等の区画 |
 
 領域の区別は **背景色の差のみ** で表現する。ボーダーや影は使わない。
 
@@ -57,8 +57,8 @@ front/src/components/
 
 | 項目 | Neumorphism (`neu`) | Material (`material`) |
 |------|--------------------|-----------------------|
-| カード背景 | `bg-gray-100` (影なし) | `bg-white` + `shadow-md` |
+| カード背景 | `bg-slate-100` (影なし) | `bg-white` + `shadow-md` |
 | バッジ (ok) | `bg-emerald-100 text-emerald-700` | `bg-emerald-500 text-white` |
 | バッジ (error) | `bg-rose-100 text-rose-700` | `bg-rose-500 text-white` |
-| 情報パネル区切り | `border-b border-gray-300` | `divide-y divide-gray-200` |
-| ボタン | `bg-gray-100` + `SHADOW_OUT` | `bg-blue-500 text-white` |
+| 情報パネル区切り | `border-b border-slate-300` | `divide-y divide-slate-200` |
+| ボタン | `bg-slate-100` + `SHADOW_OUT` | `bg-blue-500 text-white` |

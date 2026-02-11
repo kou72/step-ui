@@ -1,12 +1,13 @@
-// Neumorphism: アクション要素 — CLAUDE.md ルール: 影あり
-const SHADOW_OUT = '3px 3px 6px #d1d5db, -3px -3px 6px #ffffff'
+// Neumorphism: アクション要素 — CLAUDE.md ルール: 影あり (CSS 変数でライト/ダーク自動切替)
+const SHADOW_OUT = '3px 3px 6px var(--neu-shadow-dark), -3px -3px 6px var(--neu-shadow-light)'
 
 export function Button({ onClick, disabled, children }) {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className="bg-gray-100 w-full py-3 rounded-2xl text-gray-700 font-medium text-sm
+      className="bg-slate-100 dark:bg-slate-700 w-full py-3 rounded-2xl
+                 text-slate-700 dark:text-slate-200 font-medium text-sm
                  tracking-wide transition-all duration-150 active:scale-[0.98] disabled:opacity-60"
       style={{ boxShadow: SHADOW_OUT }}
     >

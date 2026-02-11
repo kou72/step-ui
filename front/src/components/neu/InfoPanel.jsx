@@ -2,8 +2,8 @@
 function Row({ label, value }) {
   return (
     <div className="flex justify-between items-center py-3">
-      <span className="text-gray-600 text-sm">{label}</span>
-      <span className="text-gray-800 font-mono text-sm">{value ?? '—'}</span>
+      <span className="text-slate-600 dark:text-slate-400 text-sm">{label}</span>
+      <span className="text-slate-800 dark:text-slate-200 font-mono text-sm">{value ?? '—'}</span>
     </div>
   )
 }
@@ -11,10 +11,10 @@ function Row({ label, value }) {
 export function InfoPanel({ data, timestamp }) {
   return (
     <div className="mb-6">
-      <div className="border-b border-gray-300">
+      <div className="border-b border-slate-300 dark:border-slate-700">
         <Row label="CA URL"          value={data?.ca_url} />
       </div>
-      <div className="border-b border-gray-300">
+      <div className="border-b border-slate-300 dark:border-slate-700">
         <Row label="HTTP ステータス" value={data?.http_status} />
       </div>
       <Row label="取得時刻" value={timestamp} />

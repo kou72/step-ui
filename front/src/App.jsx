@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { ThemeProvider } from './theme/ThemeContext'
+import { ThemeProvider, useTheme } from './theme/ThemeContext'
 import { Card, StatusBadge, InfoPanel, Button, ThemeSwitcher } from './components'
 
 function StatusPage() {
+  const { dark } = useTheme()
   const [data,      setData]      = useState(null)
   const [status,    setStatus]    = useState('loading')
   const [timestamp, setTimestamp] = useState(null)
@@ -28,14 +29,14 @@ function StatusPage() {
   useEffect(() => { fetchStatus() }, [])
 
   return (
-    <div className="bg-gray-200 min-h-screen flex justify-center items-start pt-16 pl-24 pr-4">
+    <div className={`${dark ? 'dark' : ''} bg-slate-200 dark:bg-slate-900 min-h-screen flex justify-center items-start pt-16 pl-24 pr-4`}>
       <ThemeSwitcher />
       <Card>
-        <h1 className="text-lg font-semibold text-gray-700 tracking-wide mb-4">
+        <h1 className="text-lg font-semibold text-slate-700 dark:text-slate-200 tracking-wide mb-4">
           step-ca ステータス
         </h1>
-        <div className="flex justify-between items-center px-1 py-3 mb-1 border-b border-gray-300">
-          <span className="text-gray-600 text-sm">ステータス</span>
+        <div className="flex justify-between items-center px-1 py-3 mb-1 border-b border-slate-300 dark:border-slate-700">
+          <span className="text-slate-600 dark:text-slate-400 text-sm">ステータス</span>
           <StatusBadge status={status} />
         </div>
         <InfoPanel data={data} timestamp={timestamp} />

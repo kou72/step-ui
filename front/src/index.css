@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+/* クラスベースのダークモード (要素または祖先に .dark クラスで適用) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ニューモーフィズム影色 — ライト/ダークで自動切替 */
+:root {
+  --neu-shadow-dark:  #cbd5e1; /* slate-300 */
+  --neu-shadow-light: #ffffff;
+}
+.dark {
+  --neu-shadow-dark:  #131c28;
+  --neu-shadow-light: #293a50;
+}
