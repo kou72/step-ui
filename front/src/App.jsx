@@ -132,7 +132,17 @@ function StatusPage() {
       </Card>
 
       <Modal open={initOpen} onClose={() => setInitOpen(false)} title={S.page.init}>
-        <InitPanel onSubmit={initCA} loading={loading} error={initError} />
+        <InitPanel
+          onSubmit={initCA}
+          loading={loading}
+          error={initError}
+          defaults={config && !config.error ? {
+            name:        (config.caName ?? '').replace(/ Root CA$/, ''),
+            dns:         config.dnsNames ?? '',
+            address:     config.address  ?? ':443',
+            provisioner: config.provisioners?.split(', ')[0]?.replace(/ \([^)]+\)$/, '') ?? '',
+          } : undefined}
+        />
       </Modal>
     </div>
   )

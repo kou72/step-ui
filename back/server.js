@@ -10,10 +10,15 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 
-const CA_URL      = 'https://192.168.11.143';
-const CA_HOSTNAME = '192.168.11.143';
-const CA_PORT     = 443;
-const ROOT_CA     = fs.readFileSync('/home/mgmt/.step/certs/root_ca.crt');
+const CA_URL       = 'https://192.168.11.143';
+const CA_HOSTNAME  = '192.168.11.143';
+const CA_PORT      = 443;
+const ROOT_CA_PATH = '/home/mgmt/.step/certs/root_ca.crt';
+
+// CA init 後に証明書が差し替わるため、毎回ディスクから読む
+const readRootCA = () => {
+  try { return fs.readFileSync(ROOT_CA_PATH); } catch { return undefined; }
+};
 
 app.use(express.static(path.join(__dirname, '..', 'front', 'dist')));
 
@@ -23,7 +28,7 @@ app.get('/api/status', (_req, res) => {
     port:     CA_PORT,
     path:     '/health',
     method:   'GET',
-    ca:       ROOT_CA,
+    ca:       readRootCA(),
   };
   const probe = https.request(opts, (r) => {
     let body = '';
@@ -72,29 +77,35 @@ app.get('/api/ca/config', (_req, res) => {
 
 app.post('/api/ca/start', (_req, res) => {
   const probe = https.request(
-    { hostname: CA_HOSTNAME, port: CA_PORT, path: '/health', method: 'GET', ca: ROOT_CA },
+    { hostname: CA_HOSTNAME, port: CA_PORT, path: '/health', method: 'GET', ca: readRootCA() },
     () => res.status(409).json({ status: 'already_running' })
   );
   probe.on('error', () => {
-    const proc = spawn('sudo', ['/usr/bin/step-ca', '--password-file', CA_PASS_FILE, CA_CONFIG], {
-      detached: true,
-      stdio: ['ignore', 'ignore', 'pipe'],
-    });
-    let stderr = '';
-    proc.stderr.on('data', (d) => { stderr += d; });
-    const timer = setTimeout(() => {
-      if (!res.headersSent) { proc.unref(); res.json({ status: 'starting' }); }
-    }, 500);
-    proc.on('error', (e) => {
-      clearTimeout(timer);
-      if (!res.headersSent) res.status(500).json({ status: 'error', message: e.message });
-    });
-    proc.on('exit', (code) => {
-      if (code !== null && code !== 0 && !res.headersSent) {
+    // 既存プロセスが DB ロックを保持している場合に備えて先に kill
+    const killer = spawn('sudo', ['/usr/bin/pkill', '-x', 'step-ca'], { stdio: 'ignore' });
+    killer.on('close', () => setTimeout(startProc, 300));
+    killer.on('error', () => setTimeout(startProc, 300));
+    function startProc() {
+      const proc = spawn('sudo', ['/usr/bin/step-ca', '--password-file', CA_PASS_FILE, CA_CONFIG], {
+        detached: true,
+        stdio: ['ignore', 'ignore', 'pipe'],
+      });
+      let stderr = '';
+      proc.stderr.on('data', (d) => { stderr += d; });
+      const timer = setTimeout(() => {
+        if (!res.headersSent) { proc.unref(); res.json({ status: 'starting' }); }
+      }, 500);
+      proc.on('error', (e) => {
         clearTimeout(timer);
-        res.status(500).json({ status: 'error', message: stderr.trim() || `exited with code ${code}` });
-      }
-    });
+        if (!res.headersSent) res.status(500).json({ status: 'error', message: e.message });
+      });
+      proc.on('exit', (code) => {
+        if (code !== null && code !== 0 && !res.headersSent) {
+          clearTimeout(timer);
+          res.status(500).json({ status: 'error', message: stderr.trim() || `exited with code ${code}` });
+        }
+      });
+    }
   });
   probe.end();
 });
@@ -110,6 +121,11 @@ app.post('/api/ca/init', (req, res) => {
   } catch (e) {
     return res.status(500).json({ status: 'error', message: e.message });
   }
+  // step ca init がファイル競合しないよう既存 CA ディレクトリを削除
+  const stepHome = '/home/mgmt/.step';
+  for (const dir of ['config', 'certs', 'secrets', 'db']) {
+    try { fs.rmSync(`${stepHome}/${dir}`, { recursive: true, force: true }); } catch {}
+  }
   const dnsArgs = dns.split(',').map(d => d.trim()).filter(Boolean).flatMap(d => ['--dns', d]);
   const args = [
     'ca', 'init',
@@ -119,7 +135,6 @@ app.post('/api/ca/init', (req, res) => {
     '--provisioner',              provisioner,
     '--password-file',            tmpFile,
     '--provisioner-password-file', tmpFile,
-    '--force',
   ];
   const proc = spawn('/usr/bin/step', args, {
     stdio: ['ignore', 'pipe', 'pipe'],

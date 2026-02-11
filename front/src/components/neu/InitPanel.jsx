@@ -23,11 +23,11 @@ function Field({ label, type = 'text', value, onChange, placeholder }) {
   )
 }
 
-export function InitPanel({ onSubmit, loading, error }) {
-  const [name,        setName]        = useState('')
-  const [dns,         setDns]         = useState('')
-  const [address,     setAddress]     = useState(':443')
-  const [provisioner, setProvisioner] = useState('')
+export function InitPanel({ onSubmit, loading, error, defaults }) {
+  const [name,        setName]        = useState(defaults?.name        ?? '')
+  const [dns,         setDns]         = useState(defaults?.dns         ?? '')
+  const [address,     setAddress]     = useState(defaults?.address     ?? ':443')
+  const [provisioner, setProvisioner] = useState(defaults?.provisioner ?? '')
   const [password,    setPassword]    = useState('')
   const [confirm,     setConfirm]     = useState('')
   const [localError,  setLocalError]  = useState(null)
