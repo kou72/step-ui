@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react'
+
+const RefreshIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="23 4 23 10 17 10"/>
+    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+  </svg>
+)
 import { ThemeProvider, useTheme } from './theme/ThemeContext'
-import { Card, StatusBadge, ConfigPanel, InitPanel, Button, SideBar } from './components'
+import { Card, StatusBadge, ConfigPanel, InitPanel, Button, SideBar, LogPanel } from './components'
 import { Modal } from './components/Modal'
 import { S } from './strings'
 
@@ -11,6 +18,9 @@ function StatusPage() {
   const [initError, setInitError] = useState(null)
   const [config,    setConfig]    = useState(null)
   const [initOpen,  setInitOpen]  = useState(false)
+  const [logs,      setLogs]      = useState([])
+  const [autoLog,   setAutoLog]   = useState(true)
+  const [logOpen,   setLogOpen]   = useState(true)
 
   // バックグラウンドポーリング用 — loading 状態を変更しない
   const fetchStatus = async () => {
@@ -49,7 +59,7 @@ function StatusPage() {
         await fetchStatus()
       } else if (json.status === 'starting') {
         setStatus('loading')
-        setTimeout(fetchStatus, 2000)
+        pollStatus()
       } else {
         setStatus('error')
       }
@@ -95,6 +105,20 @@ function StatusPage() {
     }
   }
 
+  const fetchLogs = async () => {
+    try {
+      const res  = await fetch('/api/ca/logs')
+      const json = await res.json()
+      setLogs(json.lines ?? [])
+    } catch {}
+  }
+
+  // アクション後に最大 n 回ポーリング (2秒間隔)
+  const pollStatus = (n = 3) => {
+    if (n <= 0) return
+    setTimeout(async () => { await fetchStatus(); pollStatus(n - 1) }, 2000)
+  }
+
   const toggleCA = () => {
     if (status === 'ok')    stopCA()
     else if (status === 'error') startCA()
@@ -103,33 +127,52 @@ function StatusPage() {
   useEffect(() => {
     fetchStatus()
     fetchConfig()
-    const id = setInterval(fetchStatus, 2000)
-    return () => clearInterval(id)
+    fetchLogs()
   }, [])
+
+  // ログ自動ポーリング: autoLog が ON かつ CA 起動中のみ
+  useEffect(() => {
+    if (!autoLog || status !== 'ok') return
+    const id = setInterval(fetchLogs, 2000)
+    return () => clearInterval(id)
+  }, [autoLog, status])
 
   return (
     <div className={`${dark ? 'dark' : ''} bg-slate-200 dark:bg-slate-900 min-h-screen flex justify-center items-start pt-16 pl-24 pr-4 pb-8`}>
       <SideBar />
-      <Card>
-        {/* タイトル行: CA + ステータスバッジ(トグルボタン) + 初期化ボタン */}
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-3">
-            <h1 className="text-lg font-semibold text-slate-700 dark:text-slate-200 tracking-wide">
-              {S.page.ca}
-            </h1>
-            <StatusBadge
-              status={status}
-              onClick={toggleCA}
-              disabled={status === 'loading' || loading}
-            />
+      <div className="flex flex-col gap-4">
+        <Card>
+          {/* タイトル行: CA + ステータスバッジ(トグルボタン) + 初期化ボタン */}
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center gap-3">
+              <h1 className="text-lg font-semibold text-slate-700 dark:text-slate-200 tracking-wide">
+                {S.page.ca}
+              </h1>
+              <StatusBadge
+                status={status}
+                onClick={toggleCA}
+                disabled={status === 'loading' || loading}
+              />
+              <button
+                onClick={fetchStatus}
+                aria-label="ステータスを更新"
+                className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+              >
+                <RefreshIcon />
+              </button>
+            </div>
+            <Button small onClick={() => { setInitError(null); setInitOpen(true) }}>
+              {S.btn.initOpen}
+            </Button>
           </div>
-          <Button small onClick={() => { setInitError(null); setInitOpen(true) }}>
-            {S.btn.initOpen}
-          </Button>
-        </div>
 
-        <ConfigPanel config={config} />
-      </Card>
+          <ConfigPanel config={config} />
+        </Card>
+
+        <Card flush>
+          <LogPanel lines={logs} autoLog={autoLog} onToggleAutoLog={() => setAutoLog(v => !v)} collapsed={!logOpen} onToggleCollapse={() => setLogOpen(v => !v)} />
+        </Card>
+      </div>
 
       <Modal open={initOpen} onClose={() => setInitOpen(false)} title={S.page.init}>
         <InitPanel

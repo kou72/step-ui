@@ -47,6 +47,17 @@ app.get('/api/status', (_req, res) => {
 
 const CA_CONFIG    = '/home/mgmt/.step/config/ca.json';
 const CA_PASS_FILE = '/home/mgmt/.step/secrets/ca-password';
+const CA_LOG_FILE  = path.join(__dirname, 'step-ca.log');
+
+app.get('/api/ca/logs', (_req, res) => {
+  try {
+    const content = fs.readFileSync(CA_LOG_FILE, 'utf8');
+    const lines = content.split('\n').filter(Boolean);
+    res.json({ lines: lines.slice(-300) });
+  } catch {
+    res.json({ lines: [] });
+  }
+});
 
 app.get('/api/ca/config', (_req, res) => {
   try {
@@ -86,12 +97,15 @@ app.post('/api/ca/start', (_req, res) => {
     killer.on('close', () => setTimeout(startProc, 300));
     killer.on('error', () => setTimeout(startProc, 300));
     function startProc() {
+      const logStream = fs.createWriteStream(CA_LOG_FILE, { flags: 'w' });
       const proc = spawn('sudo', ['/usr/bin/step-ca', '--password-file', CA_PASS_FILE, CA_CONFIG], {
         detached: true,
-        stdio: ['ignore', 'ignore', 'pipe'],
+        stdio: ['ignore', 'pipe', 'pipe'],
       });
       let stderr = '';
-      proc.stderr.on('data', (d) => { stderr += d; });
+      proc.stdout.on('data', (d) => { logStream.write(d); });
+      proc.stderr.on('data', (d) => { logStream.write(d); stderr += d; });
+      proc.on('close', () => logStream.end());
       const timer = setTimeout(() => {
         if (!res.headersSent) { proc.unref(); res.json({ status: 'starting' }); }
       }, 500);

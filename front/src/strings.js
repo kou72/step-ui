@@ -61,6 +61,12 @@ export const S = {
     ca: 'CA',
   },
 
+  // ログパネル
+  logs: {
+    title: 'ログ',
+    empty: 'ログがありません（CA起動後に表示されます）',
+  },
+
   // アクセシビリティ (aria-label)
   aria: {
     darkMode: (on)    => `ダークモード: 現在 ${on    ? 'ON'          : 'OFF'}`,

@@ -1,0 +1,25 @@
+badger 2026/02/11 23:31:16 INFO: All 1 tables opened in 1ms
+badger 2026/02/11 23:31:16 INFO: Replaying file id: 0 at offset: 4793
+badger 2026/02/11 23:31:16 INFO: Replay took: 2.558µs
+2026/02/11 23:31:16 Building new tls configuration using step-ca x509 Signer Interface
+2026/02/11 23:31:16 Starting Smallstep CA/0.29.0 (linux/amd64)
+2026/02/11 23:31:16 Documentation: https://u.step.sm/docs/ca
+2026/02/11 23:31:16 Community Discord: https://u.step.sm/discord
+2026/02/11 23:31:16 Config file: /home/mgmt/.step/config/ca.json
+2026/02/11 23:31:16 The primary server URL is https://192.168.11.143:443
+2026/02/11 23:31:16 Root certificates are available at https://192.168.11.143:443/roots.pem
+2026/02/11 23:31:16 X.509 Root Fingerprint: 0498562e00105b36eca4ab18f1af78deec2cc9fb96505ed5cc2d71fe73140f95
+2026/02/11 23:31:16 Serving HTTPS on 0.0.0.0:443 ...
+time="2026-02-11T23:31:18Z" level=info duration="111.119µs" duration-ns=111119 fields.time="2026-02-11T23:31:18Z" method=GET name=ca path=/health protocol=HTTP/1.1 referer= remote-address=192.168.11.143 request-id=6bf16df6-bd4a-4568-b73b-2b99ef119c6a size=16 status=200 user-agent= user-id=
+time="2026-02-11T23:31:20Z" level=info duration="12.634µs" duration-ns=12634 fields.time="2026-02-11T23:31:20Z" method=GET name=ca path=/health protocol=HTTP/1.1 referer= remote-address=192.168.11.143 request-id=c3f9773a-f97a-4ce7-9ab5-ec1a7a20a2b0 size=16 status=200 user-agent= user-id=
+time="2026-02-11T23:31:22Z" level=info duration="11.223µs" duration-ns=11223 fields.time="2026-02-11T23:31:22Z" method=GET name=ca path=/health protocol=HTTP/1.1 referer= remote-address=192.168.11.143 request-id=fd922b01-ed44-4d2b-b7bb-45fe161bae40 size=16 status=200 user-agent= user-id=
+time="2026-02-11T23:32:44Z" level=info duration="11.211µs" duration-ns=11211 fields.time="2026-02-11T23:32:44Z" method=GET name=ca path=/health protocol=HTTP/1.1 referer= remote-address=192.168.11.143 request-id=d14b0f20-fa81-4cb5-8f8c-c714ccabc6ec size=16 status=200 user-agent= user-id=
+time="2026-02-11T23:32:44Z" level=info duration="17.72µs" duration-ns=17720 fields.time="2026-02-11T23:32:44Z" method=GET name=ca path=/health protocol=HTTP/1.1 referer= remote-address=192.168.11.143 request-id=5da965a2-66bd-4e1b-9398-7e38a96c4793 size=16 status=200 user-agent= user-id=
+time="2026-02-11T23:32:54Z" level=info duration="26.638µs" duration-ns=26638 fields.time="2026-02-11T23:32:54Z" method=GET name=ca path=/health protocol=HTTP/1.1 referer= remote-address=192.168.11.143 request-id=4af10b1a-f4e9-443c-8438-d5d3ab8d51c3 size=16 status=200 user-agent= user-id=
+time="2026-02-11T23:32:54Z" level=info duration="11.401µs" duration-ns=11401 fields.time="2026-02-11T23:32:54Z" method=GET name=ca path=/health protocol=HTTP/1.1 referer= remote-address=192.168.11.143 request-id=3b3ca64e-15f2-45d0-a1a4-393f45ba4d3d size=16 status=200 user-agent= user-id=
+time="2026-02-11T23:33:01Z" level=info duration="10.97µs" duration-ns=10970 fields.time="2026-02-11T23:33:01Z" method=GET name=ca path=/health protocol=HTTP/1.1 referer= remote-address=192.168.11.143 request-id=3bad1b19-f240-4201-8b65-dd5b5b235d6f size=16 status=200 user-agent= user-id=
+time="2026-02-11T23:57:51Z" level=info duration="12.254µs" duration-ns=12254 fields.time="2026-02-11T23:57:51Z" method=GET name=ca path=/health protocol=HTTP/1.1 referer= remote-address=192.168.11.143 request-id=40f32511-023d-42fb-93ca-36185152a420 size=16 status=200 user-agent= user-id=
+time="2026-02-11T23:59:23Z" level=info duration="23.614µs" duration-ns=23614 fields.time="2026-02-11T23:59:23Z" method=GET name=ca path=/health protocol=HTTP/1.1 referer= remote-address=192.168.11.143 request-id=1e2cc232-ba94-40b7-b23e-53bd43420bfe size=16 status=200 user-agent= user-id=
+time="2026-02-11T23:59:23Z" level=info duration="11.685µs" duration-ns=11685 fields.time="2026-02-11T23:59:23Z" method=GET name=ca path=/health protocol=HTTP/1.1 referer= remote-address=192.168.11.143 request-id=0ee4049a-88d2-4598-9b84-aeb693e23612 size=16 status=200 user-agent= user-id=
+time="2026-02-11T23:59:28Z" level=info duration="12.12µs" duration-ns=12120 fields.time="2026-02-11T23:59:28Z" method=GET name=ca path=/health protocol=HTTP/1.1 referer= remote-address=192.168.11.143 request-id=cc7dd994-03d1-472e-a767-7e435454d812 size=16 status=200 user-agent= user-id=
+time="2026-02-12T00:03:16Z" level=info duration="11.549µs" duration-ns=11549 fields.time="2026-02-12T00:03:16Z" method=GET name=ca path=/health protocol=HTTP/1.1 referer= remote-address=192.168.11.143 request-id=d01df85c-d4a7-4482-b3bd-7fc13ea7e1e0 size=16 status=200 user-agent= user-id=
