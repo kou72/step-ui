@@ -1,6 +1,9 @@
 node_modules/
 package-lock.json
 
+# ビルド成果物
+front/dist/
+
 # TLS証明書 (秘密鍵・サーバ証明書)
 cert/*.crt
 cert/*.key

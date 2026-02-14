@@ -15,7 +15,7 @@ export function StatusBadge({ status, onClick, disabled }) {
       <button
         onClick={onClick}
         disabled={disabled}
-        className={`${base} transition-opacity hover:opacity-75 disabled:cursor-default disabled:opacity-100`}
+        className={`${base} cursor-pointer transition-opacity hover:opacity-75 disabled:cursor-default disabled:opacity-100`}
       >
         {label}
       </button>
