@@ -2,11 +2,10 @@
   "name": "step-ui",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "dev": "concurrently -n back,front -c blue,green \"npm run dev:back\" \"npm run dev:front\"",
-    "dev:back": "node back/server.js",
-    "dev:front": "npm run dev --prefix front"
+    "start": "node server.js",
+    "dev": "concurrently -n server,front -c blue,green \"node server.js\" \"npm run dev --prefix front\""
   },
   "keywords": [],
   "author": "",
@@ -14,5 +13,8 @@
   "type": "commonjs",
   "devDependencies": {
     "concurrently": "^9.2.1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
   }
 }

@@ -2,7 +2,5 @@ node_modules/
 package-lock.json
 
 # TLS証明書 (秘密鍵・サーバ証明書)
-front/cert/srv.crt
-front/cert/srv.key
-back/srv.crt
-back/srv.key
+cert/*.crt
+cert/*.key

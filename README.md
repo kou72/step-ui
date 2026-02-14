@@ -1,35 +1,37 @@
 # step-ui
 
-step-ca の状態確認・起動を行う Web UI。
-React + Tailwind CSS v4 (Vite) のフロントエンドと Express のバックエンドで構成。
+step-ca の管理 Web UI。
+React + Tailwind CSS v4 (Vite) のフロントエンドと Express の API サーバーで構成。
 
 ## ディレクトリ構成
 
 ```
 step-ui/
-├── front/          # Vite + React + Tailwind CSS v4
-│   └── src/
-│       ├── App.jsx
-│       ├── theme/
-│       └── components/
-│           ├── neu/       # ニューモーフィズム実装
-│           ├── material/  # マテリアルデザイン実装
-│           ├── SideBar.jsx
-│           └── ThemeSwitcher.jsx
-└── back/           # Express (HTTP, ポート 3001)
-    └── server.js
+├── server.js         # エントリーポイント (HTTPS:3000 + HTTP:3001)
+├── cert/             # UI サーバー用 TLS 証明書 (git 管理外)
+│   ├── server.crt
+│   └── server.key
+├── back/             # API ロジック
+│   └── api.js        # Express ルート定義 (/api/*)
+└── front/            # Vite + React + Tailwind CSS v4
+    ├── src/
+    │   ├── App.jsx
+    │   ├── strings.js
+    │   ├── theme/
+    │   └── components/
+    │       ├── neu/       # ニューモーフィズム実装
+    │       └── material/  # マテリアルデザイン実装
+    ├── dist/          # ビルド成果物 (npm run build)
+    └── vite.config.js
 ```
 
 ## セットアップ
 
 ### 1. sudoers 設定（初回のみ・要 root）
 
-バックエンドが `mgmt` ユーザーとして step-ca を起動できるよう権限を付与する。
+バックエンドが `mgmt` ユーザーとして step-ca を起動/停止できるよう権限を付与する。
 
 #### 1-a. パスワードファイルを作成
-
-step-ca はターミナルなしで起動する場合にパスワードファイルが必要。
-CA 初期化時に設定したパスワードを記録しておく。
 
 ```bash
 mkdir -p /home/mgmt/.step/secrets
@@ -47,63 +49,75 @@ EOF
 sudo chmod 440 /etc/sudoers.d/step-ca
 ```
 
-確認:
+### 2. 依存関係のインストール
 
 ```bash
-sudo -l -U mgmt | grep -E 'step-ca|pkill'
-# → (ALL) NOPASSWD: /usr/bin/step-ca --password-file ...
-# → (ALL) NOPASSWD: /usr/bin/pkill -x step-ca
+cd ~/step-ui
+npm install            # Express (ルート)
+cd front && npm install  # React + Vite
 ```
 
-### 2. フロントエンドのビルド
+### 3. フロントエンドのビルド
 
 ```bash
 cd ~/step-ui/front
-npm install       # 初回のみ
 npm run build     # dist/ を生成
 ```
 
-### 3. バックエンドの起動
+### 4. UI サーバー用証明書の生成
+
+step-ca が起動中に実行する。有効期限は 24 時間。
 
 ```bash
-cd ~/step-ui/back
-node server.js
+step ca certificate "192.168.11.143" \
+  cert/server.crt cert/server.key \
+  --not-after=24h
+```
+
+詳細は [cert/README.md](cert/README.md) を参照。
+
+### 5. サーバーの起動
+
+```bash
+cd ~/step-ui
+npm start
+# → HTTPS server listening on https://0.0.0.0:3000
 # → HTTP server listening on http://localhost:3001
 ```
 
-ブラウザで `http://192.168.11.143:3001` を開く。
+ブラウザで `https://192.168.11.143:3000` を開く。
 
-> **開発時 (HMR)**
-> ```bash
-> cd ~/step-ui/front && npm run dev
-> # → http://localhost:5173 (/api/* は localhost:3001 にプロキシ)
-> ```
+証明書がない場合は HTTPS:3000 は起動せず、HTTP:3001 のみで動作する。
+
+## 開発
+
+```bash
+npm run dev
+# → Express (HTTP:3001) + Vite dev server (HTTP:5173) が同時起動
+```
+
+ブラウザで `http://192.168.11.143:5173` を開く。
+Vite が `/api/*` を `http://localhost:3001` にプロキシするため、API も動作する。
+HMR によりソース変更が即座に反映される。
 
 ## 機能
 
 | 機能 | 説明 |
 |------|------|
 | ステータス確認 | step-ca の `/health` を叩いて OK / ERROR を表示 |
-| CA 起動 | ステータスが ERROR の時に「CA起動」ボタンが出現。クリックで `sudo step-ca` を実行 |
-| CA 停止 | ステータスが OK の時に「CA停止」ボタンが出現。クリックで `sudo pkill -x step-ca` を実行 |
-| テーマ切替 | サイドバー下部のトグルで Neumorphism / Material を切替 |
-| ダークモード | サイドバー下部のトグルで ON/OFF |
+| CA 起動/停止 | ステータスに応じてトグル動作 |
+| CA 初期化 | モーダルから `step ca init` を実行。現在の設定値がプリフィル |
+| ログ表示 | step-ca のログをリアルタイム表示。自動更新のオン/オフ、折り畳み対応 |
+| テーマ切替 | サイドバーで Neumorphism / Material を切替 |
+| ダークモード | サイドバーで ON/OFF |
 
 ## API
 
 | エンドポイント | メソッド | 説明 |
 |---|---|---|
 | `/api/status` | GET | step-ca のヘルスチェック結果を返す |
+| `/api/ca/config` | GET | CA の設定情報 (名前, DNS, 証明書期限等) を返す |
+| `/api/ca/logs` | GET | step-ca のログ (最新 300 行) を返す |
 | `/api/ca/start` | POST | step-ca を起動する。起動済みなら `409 already_running` |
-| `/api/ca/stop`  | POST | step-ca を停止する。未起動なら `404 not_running` |
-
-## 証明書の更新
-
-step-ca が発行するサーバ証明書 (`back/srv.crt`) の有効期限は 24 時間。
-期限切れになったら以下で更新する:
-
-```bash
-cd ~/step-ui/back
-step ca renew srv.crt srv.key
-node server.js  # 再起動
-```
+| `/api/ca/stop` | POST | step-ca を停止する。未起動なら `404 not_running` |
+| `/api/ca/init` | POST | step-ca を初期化する |
