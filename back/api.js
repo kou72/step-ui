@@ -244,6 +244,13 @@ module.exports = function (app) {
         const { X509Certificate } = require('crypto');
         const pem = fs.readFileSync(crtFile, 'utf8');
         const x509 = new X509Certificate(pem);
+        const issuerCN = x509.issuer.split('\n').find(l => l.startsWith('CN='))?.replace('CN=', '') || null;
+        let issuerSerial = null;
+        try {
+          const issuerPem = fs.readFileSync(path.join('/home/mgmt/.step/certs', 'intermediate_ca.crt'), 'utf8');
+          const issuerX509 = new X509Certificate(issuerPem);
+          issuerSerial = issuerX509.serialNumber;
+        } catch {}
         const entry = {
           id:        String(Date.now()),
           subject,
@@ -251,6 +258,8 @@ module.exports = function (app) {
           notBefore: new Date(x509.validFrom).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }),
           notAfter:  new Date(x509.validTo).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }),
           serial:    x509.serialNumber,
+          issuerCN,
+          issuerSerial,
           certPath:  path.relative(path.join(DATA_DIR, '..'), crtFile),
           keyPath:   path.relative(path.join(DATA_DIR, '..'), keyFile),
           issuedAt:  new Date().toISOString(),

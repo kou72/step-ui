@@ -1,13 +1,17 @@
-badger 2026/02/14 05:02:34 INFO: All 1 tables opened in 1ms
-badger 2026/02/14 05:02:34 INFO: Replaying file id: 0 at offset: 30573
-badger 2026/02/14 05:02:34 INFO: Replay took: 2.501µs
-2026/02/14 05:02:34 Building new tls configuration using step-ca x509 Signer Interface
-2026/02/14 05:02:34 Starting Smallstep CA/0.29.0 (linux/amd64)
-2026/02/14 05:02:34 Documentation: https://u.step.sm/docs/ca
-2026/02/14 05:02:34 Community Discord: https://u.step.sm/discord
-2026/02/14 05:02:34 Config file: /home/mgmt/.step/config/ca.json
-2026/02/14 05:02:34 The primary server URL is https://192.168.11.143:443
-2026/02/14 05:02:34 Root certificates are available at https://192.168.11.143:443/roots.pem
-2026/02/14 05:02:34 X.509 Root Fingerprint: 0498562e00105b36eca4ab18f1af78deec2cc9fb96505ed5cc2d71fe73140f95
-2026/02/14 05:02:34 Serving HTTPS on 0.0.0.0:443 ...
-time="2026-02-14T05:02:36Z" level=info duration="22.072µs" duration-ns=22072 fields.time="2026-02-14T05:02:36Z" method=GET name=ca path=/health protocol=HTTP/1.1 referer= remote-address=192.168.11.143 request-id=076a729b-d9be-4684-a91f-8abce3b51fcd size=16 status=200 user-agent= user-id=
+badger 2026/02/14 05:29:22 INFO: All 1 tables opened in 1ms
+badger 2026/02/14 05:29:22 INFO: Replaying file id: 0 at offset: 30573
+badger 2026/02/14 05:29:22 INFO: Replay took: 42.454µs
+2026/02/14 05:29:23 Building new tls configuration using step-ca x509 Signer Interface
+2026/02/14 05:29:23 Starting Smallstep CA/0.29.0 (linux/amd64)
+2026/02/14 05:29:23 Documentation: https://u.step.sm/docs/ca
+2026/02/14 05:29:23 Community Discord: https://u.step.sm/discord
+2026/02/14 05:29:23 Config file: /home/mgmt/.step/config/ca.json
+2026/02/14 05:29:23 The primary server URL is https://192.168.11.143:443
+2026/02/14 05:29:23 Root certificates are available at https://192.168.11.143:443/roots.pem
+2026/02/14 05:29:23 X.509 Root Fingerprint: 0498562e00105b36eca4ab18f1af78deec2cc9fb96505ed5cc2d71fe73140f95
+2026/02/14 05:29:23 Serving HTTPS on 0.0.0.0:443 ...
+time="2026-02-14T05:29:25Z" level=info duration="22.346µs" duration-ns=22346 fields.time="2026-02-14T05:29:25Z" method=GET name=ca path=/health protocol=HTTP/1.1 referer= remote-address=192.168.11.143 request-id=c558a8bd-5275-4374-80d8-1d1534bc5c08 size=16 status=200 user-agent= user-id=
+time="2026-02-14T05:29:38Z" level=info duration="122.903µs" duration-ns=122903 fields.time="2026-02-14T05:29:38Z" method=GET name=ca path="/provisioners?limit=100" protocol=HTTP/2.0 referer= remote-address=192.168.11.143 request-id=6c87ac0b-309c-4d24-baf6-85b0f530ce4a size=886 status=200 user-agent="Smallstep CLI/0.29.0 (linux/amd64)" user-id=
+time="2026-02-14T05:29:38Z" level=info duration="35.021µs" duration-ns=35021 fields.time="2026-02-14T05:29:38Z" method=GET name=ca path=/provisioners/dhSHxl8kSmma5p0MR5CA_v2CYCCa8kw_VV4G44oeBro/encrypted-key protocol=HTTP/2.0 referer= remote-address=192.168.11.143 request-id=fa6a4b47-74ff-4af6-85c0-b447416d3afe size=586 status=200 user-agent="Smallstep CLI/0.29.0 (linux/amd64)" user-id=
+time="2026-02-14T05:29:39Z" level=info duration="64.042µs" duration-ns=64042 fields.time="2026-02-14T05:29:39Z" method=GET name=ca path=/root/0498562e00105b36eca4ab18f1af78deec2cc9fb96505ed5cc2d71fe73140f95 protocol=HTTP/2.0 referer= remote-address=192.168.11.143 request-id=c9178d4e-8967-4d83-af22-98e0de37edf8 size=628 status=200 user-agent="Smallstep CLI/0.29.0 (linux/amd64)" user-id=
+time="2026-02-14T05:29:39Z" level=info certificate=MIICJDCCAcmgAwIBAgIQAfWYRcsb1yoGuMXt8ZAgdDAKBggqhkjOPQQDAjAwMQ4wDAYDVQQKEwVMb2NhbDEeMBwGA1UEAxMVTG9jYWwgSW50ZXJtZWRpYXRlIENBMB4XDTI2MDIxNDA1MjgzOVoXDTI2MDIxNTA1MjkzOVowDzENMAsGA1UEAxMEdGVzdDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJ6Z8xDu6CTGdd+IFAt+Sz50Pr3aocBHTiUoCRC+2vlbzozcJpCUwgHhvHUpiOMPv6dfbD4h7P2ajqZVDWiwOpujgeUwgeIwDgYDVR0PAQH/BAQDAgeAMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjAdBgNVHQ4EFgQUgDlpVxwfFUjIvRRib4XZsHNDcs0wHwYDVR0jBBgwFoAU0G8nTyJcOYoIHj/h3LDBVd9qoqMwFQYDVR0RBA4wDIIKdGVzdC5sb2NhbDBaBgwrBgEEAYKkZMYoQAEESjBIAgEBBBZzdXp1a2lrbzcyNzNAZ21haWwuY29tBCtkaFNIeGw4a1NtbWE1cDBNUjVDQV92MkNZQ0NhOGt3X1ZWNEc0NG9lQnJvMAoGCCqGSM49BAMCA0kAMEYCIQChKO6SfYtVuWc7eAqBpHvuUOBiaA39+gj3MrddNqOBJgIhALEjH1ZhmDRpKkvXTd16EZxcBucbmjngI+K3oHf3eups duration=45.033132ms duration-ns=45033132 fields.time="2026-02-14T05:29:39Z" issuer="Local Intermediate CA" method=POST name=ca ott=eyJhbGciOiJFUzI1NiIsImtpZCI6ImRoU0h4bDhrU21tYTVwME1SNUNBX3YyQ1lDQ2E4a3dfVlY0RzQ0b2VCcm8iLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovLzE5Mi4xNjguMTEuMTQzLzEuMC9zaWduIiwiZXhwIjoxNzcxMDQ3Mjc5LCJpYXQiOjE3NzEwNDY5NzksImlzcyI6InN1enVraWtvNzI3M0BnbWFpbC5jb20iLCJqdGkiOiI1YWEwNDE0YjUwN2E2M2Q3NzAwNjRjOTI4YTQ4ODdkZGM3MDAxYjQyYTIwZjJkNjgwNzFlY2ZiNjVjYzgwOTM0IiwibmJmIjoxNzcxMDQ2OTc5LCJzYW5zIjpbInRlc3QubG9jYWwiXSwic2hhIjoiMDQ5ODU2MmUwMDEwNWIzNmVjYTRhYjE4ZjFhZjc4ZGVlYzJjYzlmYjk2NTA1ZWQ1Y2MyZDcxZmU3MzE0MGY5NSIsInN1YiI6InRlc3QifQ.DdhSUKG_FIYfgB-TsycUpHw8CUQWno_knYjGUe_C1CD25l--LllePrYqtAWMSsJJZW2wBqIcr49gJXxEHW6SMg path=/sign protocol=HTTP/2.0 provisioner="suzukiko7273@gmail.com (dhSHxl8kSmma5p0MR5CA_v2CYCCa8kw_VV4G44oeBro)" public-key="ECDSA P-256" referer= remote-address=192.168.11.143 request-id=b31169fe-6168-42a6-a473-bddb097e9e22 sans="map[dns:[test.local]]" serial=2604429181988031254941579191730053236 size=3201 status=201 subject=test user-agent="Smallstep CLI/0.29.0 (linux/amd64)" user-id= valid-from="2026-02-14T05:28:39Z" valid-to="2026-02-15T05:29:39Z"

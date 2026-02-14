@@ -91,6 +91,8 @@ export const S = {
     table: {
       subject:  'サブジェクト',
       san:      'SAN',
+      issuerCN: '発行者CN',
+      issuerSN: '発行者SN',
       expiry:   '有効期限',
       download: 'DL',
       action:   '',

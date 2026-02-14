@@ -40,6 +40,8 @@ export function CertTable({ certs, onDownload, onDelete }) {
           <tr className="text-slate-500 dark:text-slate-400 text-xs">
             <th className="text-left py-2 font-medium">{S.cert.table.subject}</th>
             <th className="text-left py-2 font-medium">{S.cert.table.san}</th>
+            <th className="text-left py-2 font-medium">{S.cert.table.issuerCN}</th>
+            <th className="text-left py-2 font-medium">{S.cert.table.issuerSN}</th>
             <th className="text-left py-2 font-medium">{S.cert.table.expiry}</th>
             <th className="text-center py-2 font-medium">{S.cert.table.download}</th>
             <th className="py-2 font-medium">{S.cert.table.action}</th>
@@ -50,6 +52,8 @@ export function CertTable({ certs, onDownload, onDelete }) {
             <tr key={c.id} className="border-t border-slate-300 dark:border-slate-700">
               <td className="py-2 text-slate-700 dark:text-slate-200 font-mono">{c.subject}</td>
               <td className="py-2 text-slate-600 dark:text-slate-300 font-mono text-xs break-all">{c.sans}</td>
+              <td className="py-2 text-slate-600 dark:text-slate-300 text-xs whitespace-nowrap">{c.issuerCN}</td>
+              <td className="py-2 text-slate-500 dark:text-slate-400 font-mono text-xs whitespace-nowrap">{c.issuerSerial ? `${c.issuerSerial.slice(0, 8)}...` : ''}</td>
               <td className="py-2 text-slate-600 dark:text-slate-300 whitespace-nowrap">{c.notAfter}</td>
               <td className="py-2 text-center">
                 <div className="flex justify-center gap-2">
