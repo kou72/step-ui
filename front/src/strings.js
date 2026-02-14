@@ -4,6 +4,7 @@ export const S = {
   // カード見出し
   page: {
     ca:     'CA',
+    cert:   '証明書',
     init:   'CA初期化',
   },
 
@@ -59,12 +60,18 @@ export const S = {
   // サイドバー
   sidebar: {
     ca: 'CA',
+    cert: 'CERT',
   },
 
   // ログパネル
   logs: {
     title: 'ログ',
     empty: 'ログがありません（CA起動後に表示されます）',
+  },
+
+  // 証明書ページ
+  cert: {
+    placeholder: '証明書発行機能は準備中です',
   },
 
   // アクセシビリティ (aria-label)

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
 
 const RefreshIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -191,10 +192,31 @@ function StatusPage() {
   )
 }
 
+function CertPage() {
+  const { dark } = useTheme()
+  return (
+    <div className={`${dark ? 'dark' : ''} bg-slate-200 dark:bg-slate-900 min-h-screen flex justify-center items-start pt-16 pl-24 pr-4 pb-8`}>
+      <SideBar />
+      <Card>
+        <h1 className="text-lg font-semibold text-slate-700 dark:text-slate-200 tracking-wide">
+          {S.page.cert}
+        </h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
+          {S.cert.placeholder}
+        </p>
+      </Card>
+    </div>
+  )
+}
+
 export default function App() {
   return (
     <ThemeProvider>
-      <StatusPage />
+      <Routes>
+        <Route path="/ca" element={<StatusPage />} />
+        <Route path="/cert" element={<CertPage />} />
+        <Route path="*" element={<Navigate to="/ca" replace />} />
+      </Routes>
     </ThemeProvider>
   )
 }

@@ -15,6 +15,11 @@ app.use(express.static(path.join(__dirname, 'front', 'dist')));
 // API ルート (back/api.js)
 require('./back/api')(app);
 
+// SPA フォールバック — クライアントサイドルーティング用
+app.get('/{*splat}', (req, res) => {
+  res.sendFile(path.join(__dirname, 'front', 'dist', 'index.html'));
+});
+
 // HTTPS:3000 — UI 用 (証明書があれば)
 const CERT_KEY  = path.join(__dirname, 'cert', 'server.key');
 const CERT_FILE = path.join(__dirname, 'cert', 'server.crt');
