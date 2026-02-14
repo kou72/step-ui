@@ -198,7 +198,8 @@ module.exports = function (app) {
     if (!subject || !sans) {
       return res.status(400).json({ status: 'error', message: 'サブジェクトと SAN を入力してください' });
     }
-    const dur = duration || '24h';
+    const days = parseInt(duration, 10) || 1;
+    const dur = `${days * 24}h`;
 
     // provisioner 名とパスワードファイルを取得
     let provName;

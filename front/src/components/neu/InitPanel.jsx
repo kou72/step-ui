@@ -62,7 +62,7 @@ export function InitPanel({ onSubmit, loading, error, defaults }) {
       <button
         onClick={handleSubmit}
         disabled={loading}
-        className="bg-slate-100 dark:bg-slate-700 w-full py-3 rounded-2xl
+        className="bg-slate-100 dark:bg-slate-700 w-full py-3 mt-3 rounded-2xl
                    text-slate-700 dark:text-slate-200 font-medium text-sm
                    tracking-wide transition-all duration-150 active:scale-[0.98] disabled:opacity-60"
         style={{ boxShadow: SHADOW_OUT }}

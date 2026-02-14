@@ -248,12 +248,21 @@ function CertPage() {
     } catch {}
   }
 
+  const triggerDownload = (url) => {
+    const a = document.createElement('a')
+    a.href = url
+    a.download = ''
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+  }
+
   const handleDownload = (id, type) => {
-    window.open(`/api/cert/download/${id}/${type}`, '_blank')
+    triggerDownload(`/api/cert/download/${id}/${type}`)
   }
 
   const downloadRootCert = () => {
-    window.open('/api/cert/root/download', '_blank')
+    triggerDownload('/api/cert/root/download')
   }
 
   useEffect(() => { fetchCerts(); fetchRootCert() }, [])

@@ -23,7 +23,7 @@ function Field({ label, value, onChange, placeholder }) {
 export function CertForm({ onSubmit, loading, error }) {
   const [subject,    setSubject]    = useState('')
   const [sans,       setSans]       = useState('')
-  const [duration,   setDuration]   = useState('24h')
+  const [duration,   setDuration]   = useState('1')
   const [localError, setLocalError] = useState(null)
 
   const handleSubmit = () => {
@@ -46,7 +46,7 @@ export function CertForm({ onSubmit, loading, error }) {
       <button
         onClick={handleSubmit}
         disabled={loading}
-        className="w-full py-3 rounded-lg bg-blue-500 dark:bg-blue-600 text-white font-medium text-sm
+        className="w-full py-3 mt-3 rounded-lg bg-blue-500 dark:bg-blue-600 text-white font-medium text-sm
                    tracking-wide hover:bg-blue-600 dark:hover:bg-blue-500 transition-colors
                    active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
       >

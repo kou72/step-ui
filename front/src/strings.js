@@ -78,11 +78,11 @@ export const S = {
     empty:    '発行済みの証明書はありません',
     subject:  'サブジェクト (CN)',
     san:      'SAN (カンマ区切り)',
-    duration: '有効期間',
+    duration: '有効期間 (日数)',
     ph: {
       subject:  'myserver',
       san:      '192.168.11.143',
-      duration: '24h',
+      duration: '1',
     },
     err: {
       required: 'サブジェクトと SAN を入力してください',
