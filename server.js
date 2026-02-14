@@ -20,19 +20,25 @@ app.get('/{*splat}', (req, res) => {
   res.sendFile(path.join(__dirname, 'front', 'dist', 'index.html'));
 });
 
-// HTTPS:3000 — UI 用 (証明書があれば)
-const CERT_KEY  = path.join(__dirname, 'cert', 'server.key');
-const CERT_FILE = path.join(__dirname, 'cert', 'server.crt');
+// HTTPS:3000 — UI 用 (cert/ 内の .crt / .key を自動検出)
+const CERT_DIR = path.join(__dirname, 'cert');
+const findFile = (dir, ext) => {
+  try {
+    return fs.readdirSync(dir).find(f => f.endsWith(ext));
+  } catch { return null; }
+};
+const keyName  = findFile(CERT_DIR, '.key');
+const crtName  = findFile(CERT_DIR, '.crt');
 
-if (fs.existsSync(CERT_KEY) && fs.existsSync(CERT_FILE)) {
+if (keyName && crtName) {
   https.createServer({
-    key:  fs.readFileSync(CERT_KEY),
-    cert: fs.readFileSync(CERT_FILE),
+    key:  fs.readFileSync(path.join(CERT_DIR, keyName)),
+    cert: fs.readFileSync(path.join(CERT_DIR, crtName)),
   }, app).listen(3000, () => {
-    console.log('HTTPS server listening on https://0.0.0.0:3000');
+    console.log(`HTTPS server listening on https://0.0.0.0:3000 (${crtName} / ${keyName})`);
   });
 } else {
-  console.warn('証明書なし (cert/) — HTTPS:3000 は起動しません');
+  console.warn('証明書なし (cert/*.crt, cert/*.key) — HTTPS:3000 は起動しません');
 }
 
 // HTTP:3001 — 内部/開発用

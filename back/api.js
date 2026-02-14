@@ -9,6 +9,7 @@ const CA_URL       = 'https://192.168.11.143';
 const CA_HOSTNAME  = '192.168.11.143';
 const CA_PORT      = 443;
 const ROOT_CA_PATH = '/home/mgmt/.step/certs/root_ca.crt';
+const INT_CA_PATH  = '/home/mgmt/.step/certs/intermediate_ca.crt';
 const CA_CONFIG    = '/home/mgmt/.step/config/ca.json';
 const CA_PASS_FILE = '/home/mgmt/.step/secrets/ca-password';
 const CA_LOG_FILE  = path.join(__dirname, 'step-ca.log');
@@ -161,6 +162,20 @@ module.exports = function (app) {
         return res.status(500).json({ status: 'error', message: (stderr || stdout).trim() || `exited with code ${code}` });
       }
       try { fs.writeFileSync(CA_PASS_FILE, password, { mode: 0o600 }); } catch {}
+      // プロビジョナーの最大証明書期間を引き上げ (デフォルト24h → 最大1年)
+      try {
+        const cfg = JSON.parse(fs.readFileSync(CA_CONFIG, 'utf8'));
+        if (cfg.authority?.provisioners) {
+          for (const p of cfg.authority.provisioners) {
+            p.claims = {
+              ...p.claims,
+              maxTLSCertDuration: '8760h',
+              defaultTLSCertDuration: '24h',
+            };
+          }
+          fs.writeFileSync(CA_CONFIG, JSON.stringify(cfg, null, 4));
+        }
+      } catch {}
       res.json({ status: 'ok' });
     });
   });
@@ -310,25 +325,29 @@ module.exports = function (app) {
     res.json({ status: 'ok' });
   });
 
-  // ---------- ルート証明書 ----------
+  // ---------- CA証明書 ----------
 
-  app.get('/api/cert/root', (_req, res) => {
-    if (!fs.existsSync(ROOT_CA_PATH)) {
-      return res.status(404).json({ status: 'error', message: 'ルート証明書が見つかりません' });
-    }
+  const inspectCert = (certPath) => {
     try {
       const { X509Certificate } = require('crypto');
-      const pem = fs.readFileSync(ROOT_CA_PATH, 'utf8');
+      const pem = fs.readFileSync(certPath, 'utf8');
       const x509 = new X509Certificate(pem);
       const cn = x509.subject.split('\n').find(l => l.startsWith('CN='))?.replace('CN=', '') || null;
-      res.json({
+      return {
         subject:  cn,
-        notAfter: new Date(x509.validTo).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }),
         serial:   x509.serialNumber,
-      });
-    } catch (e) {
-      res.status(500).json({ status: 'error', message: e.message });
+        notAfter: new Date(x509.validTo).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+      };
+    } catch { return null; }
+  };
+
+  app.get('/api/cert/ca', (_req, res) => {
+    const root = inspectCert(ROOT_CA_PATH);
+    const intermediate = inspectCert(INT_CA_PATH);
+    if (!root && !intermediate) {
+      return res.status(404).json({ status: 'error', message: 'CA証明書が見つかりません' });
     }
+    res.json({ root, intermediate });
   });
 
   app.get('/api/cert/root/download', (_req, res) => {
@@ -338,5 +357,14 @@ module.exports = function (app) {
     res.setHeader('Content-Disposition', 'attachment; filename="root_ca.crt"');
     res.setHeader('Content-Type', 'application/x-pem-file');
     fs.createReadStream(ROOT_CA_PATH).pipe(res);
+  });
+
+  app.get('/api/cert/intermediate/download', (_req, res) => {
+    if (!fs.existsSync(INT_CA_PATH)) {
+      return res.status(404).json({ status: 'error', message: '中間証明書が見つかりません' });
+    }
+    res.setHeader('Content-Disposition', 'attachment; filename="intermediate_ca.crt"');
+    res.setHeader('Content-Type', 'application/x-pem-file');
+    fs.createReadStream(INT_CA_PATH).pipe(res);
   });
 };

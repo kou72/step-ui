@@ -8,7 +8,7 @@ const RefreshIcon = () => (
   </svg>
 )
 import { ThemeProvider, useTheme } from './theme/ThemeContext'
-import { Card, StatusBadge, ConfigPanel, InitPanel, Button, SideBar, LogPanel, CertForm, CertTable, RootCertPanel } from './components'
+import { Card, StatusBadge, ConfigPanel, InitPanel, Button, SideBar, LogPanel, CertForm, CertTable, CaCertPanel } from './components'
 import { Modal } from './components/Modal'
 import { S } from './strings'
 
@@ -208,7 +208,7 @@ function StatusPage() {
 function CertPage() {
   const { dark } = useTheme()
   const [certs,      setCerts]      = useState([])
-  const [rootCert,   setRootCert]   = useState(null)
+  const [caCerts,    setCaCerts]    = useState(null)
   const [loading,    setLoading]    = useState(false)
   const [issueOpen,  setIssueOpen]  = useState(false)
   const [issueError, setIssueError] = useState(null)
@@ -221,11 +221,11 @@ function CertPage() {
     } catch {}
   }
 
-  const fetchRootCert = async () => {
+  const fetchCaCerts = async () => {
     try {
-      const res  = await fetch('/api/cert/root')
+      const res  = await fetch('/api/cert/ca')
       const json = await res.json()
-      if (json.status !== 'error') setRootCert(json)
+      if (json.status !== 'error') setCaCerts(json)
     } catch {}
   }
 
@@ -278,7 +278,11 @@ function CertPage() {
     triggerDownload('/api/cert/root/download')
   }
 
-  useEffect(() => { fetchCerts(); fetchRootCert() }, [])
+  const downloadIntCert = () => {
+    triggerDownload('/api/cert/intermediate/download')
+  }
+
+  useEffect(() => { fetchCerts(); fetchCaCerts() }, [])
 
   return (
     <div className={`${dark ? 'dark' : ''} bg-slate-200 dark:bg-slate-900 min-h-screen flex justify-center items-start pt-16 pl-24 pr-4 pb-8`}>
@@ -286,9 +290,9 @@ function CertPage() {
       <div className="flex flex-col gap-4">
         <Card>
           <h2 className="text-lg font-semibold text-slate-700 dark:text-slate-200 tracking-wide mb-3">
-            {S.rootCert.title}
+            {S.caCert.title}
           </h2>
-          <RootCertPanel rootCert={rootCert} onDownload={downloadRootCert} />
+          <CaCertPanel caCerts={caCerts} onDownloadRoot={downloadRootCert} onDownloadIntermediate={downloadIntCert} />
         </Card>
 
         <Card>

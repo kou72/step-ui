@@ -100,14 +100,16 @@ export const S = {
     deleteConfirm: 'この証明書を削除しますか？',
   },
 
-  // ルート証明書パネル
-  rootCert: {
-    title:    'ルート証明書',
+  // CA証明書パネル
+  caCert: {
+    title:    'CA証明書',
+    root:     'ルート',
+    intermediate: '中間',
     subject:  'サブジェクト',
-    expiry:   '有効期限',
     serial:   'シリアル',
-    download: 'ダウンロード',
-    empty:    'ルート証明書が見つかりません',
+    expiry:   '有効期限',
+    download: 'DL',
+    empty:    'CA証明書が見つかりません',
   },
 
   // アクセシビリティ (aria-label)
