@@ -12,6 +12,9 @@ const ROOT_CA_PATH = '/home/mgmt/.step/certs/root_ca.crt';
 const CA_CONFIG    = '/home/mgmt/.step/config/ca.json';
 const CA_PASS_FILE = '/home/mgmt/.step/secrets/ca-password';
 const CA_LOG_FILE  = path.join(__dirname, 'step-ca.log');
+const DATA_DIR     = path.join(__dirname, '..', 'data');
+const CERTS_DIR    = path.join(DATA_DIR, 'certs');
+const CERTS_JSON   = path.join(DATA_DIR, 'certs.json');
 
 // CA init 後に証明書が差し替わるため、毎回ディスクから読む
 const readRootCA = () => {
@@ -174,5 +177,156 @@ module.exports = function (app) {
       if (code === 1)    return res.status(404).json({ status: 'not_running' });
       res.status(500).json({ status: 'error', message: stderr.trim() || `exited with code ${code}` });
     });
+  });
+
+  // ---------- 証明書 ----------
+
+  const readCerts = () => {
+    try { return JSON.parse(fs.readFileSync(CERTS_JSON, 'utf8')); } catch { return []; }
+  };
+  const writeCerts = (list) => {
+    fs.mkdirSync(CERTS_DIR, { recursive: true });
+    fs.writeFileSync(CERTS_JSON, JSON.stringify(list, null, 2));
+  };
+
+  app.get('/api/cert/list', (_req, res) => {
+    res.json({ certs: readCerts() });
+  });
+
+  app.post('/api/cert/issue', (req, res) => {
+    const { subject, sans, duration } = req.body || {};
+    if (!subject || !sans) {
+      return res.status(400).json({ status: 'error', message: 'サブジェクトと SAN を入力してください' });
+    }
+    const dur = duration || '24h';
+
+    // provisioner 名とパスワードファイルを取得
+    let provName;
+    try {
+      const cfg = JSON.parse(fs.readFileSync(CA_CONFIG, 'utf8'));
+      provName = cfg.authority?.provisioners?.[0]?.name;
+    } catch {}
+    if (!provName) {
+      return res.status(500).json({ status: 'error', message: 'provisioner が見つかりません' });
+    }
+
+    const outDir = path.join(CERTS_DIR, subject);
+    fs.mkdirSync(outDir, { recursive: true });
+    const crtFile = path.join(outDir, `${subject}.crt`);
+    const keyFile = path.join(outDir, `${subject}.key`);
+
+    const sanArgs = sans.split(',').map(s => s.trim()).filter(Boolean).flatMap(s => ['--san', s]);
+    const args = [
+      'ca', 'certificate',
+      subject, crtFile, keyFile,
+      '--provisioner', provName,
+      '--provisioner-password-file', CA_PASS_FILE,
+      ...sanArgs,
+      '--not-after', dur,
+      '--force',
+    ];
+
+    const proc = spawn('/usr/bin/step', args, {
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: { ...process.env, HOME: '/home/mgmt' },
+    });
+    let stdout = '', stderr = '';
+    proc.stdout.on('data', (d) => { stdout += d; });
+    proc.stderr.on('data', (d) => { stderr += d; });
+    proc.on('error', (e) => res.status(500).json({ status: 'error', message: e.message }));
+    proc.on('close', (code) => {
+      if (code !== 0) {
+        return res.status(500).json({ status: 'error', message: (stderr || stdout).trim() || `exited with code ${code}` });
+      }
+      // 証明書情報を読み取ってメタデータに記録
+      try {
+        const { X509Certificate } = require('crypto');
+        const pem = fs.readFileSync(crtFile, 'utf8');
+        const x509 = new X509Certificate(pem);
+        const entry = {
+          id:        String(Date.now()),
+          subject,
+          sans,
+          notBefore: new Date(x509.validFrom).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+          notAfter:  new Date(x509.validTo).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+          serial:    x509.serialNumber,
+          certPath:  path.relative(path.join(DATA_DIR, '..'), crtFile),
+          keyPath:   path.relative(path.join(DATA_DIR, '..'), keyFile),
+          issuedAt:  new Date().toISOString(),
+        };
+        const list = readCerts();
+        list.push(entry);
+        writeCerts(list);
+        res.json({ status: 'ok', cert: entry });
+      } catch (e) {
+        res.status(500).json({ status: 'error', message: e.message });
+      }
+    });
+  });
+
+  app.get('/api/cert/download/:id/:type', (req, res) => {
+    const { id, type } = req.params;
+    if (type !== 'crt' && type !== 'key') {
+      return res.status(400).json({ status: 'error', message: 'type は crt または key を指定してください' });
+    }
+    const list = readCerts();
+    const entry = list.find(c => c.id === id);
+    if (!entry) {
+      return res.status(404).json({ status: 'error', message: '証明書が見つかりません' });
+    }
+    const filePath = path.join(__dirname, '..', type === 'crt' ? entry.certPath : entry.keyPath);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ status: 'error', message: 'ファイルが見つかりません' });
+    }
+    const fileName = path.basename(filePath);
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+    res.setHeader('Content-Type', 'application/octet-stream');
+    fs.createReadStream(filePath).pipe(res);
+  });
+
+  app.delete('/api/cert/:id', (req, res) => {
+    const { id } = req.params;
+    const list = readCerts();
+    const idx = list.findIndex(c => c.id === id);
+    if (idx === -1) {
+      return res.status(404).json({ status: 'error', message: '証明書が見つかりません' });
+    }
+    const entry = list[idx];
+    // ファイルとディレクトリを削除
+    const subjectDir = path.join(CERTS_DIR, entry.subject);
+    try { fs.rmSync(subjectDir, { recursive: true, force: true }); } catch {}
+    list.splice(idx, 1);
+    writeCerts(list);
+    res.json({ status: 'ok' });
+  });
+
+  // ---------- ルート証明書 ----------
+
+  app.get('/api/cert/root', (_req, res) => {
+    if (!fs.existsSync(ROOT_CA_PATH)) {
+      return res.status(404).json({ status: 'error', message: 'ルート証明書が見つかりません' });
+    }
+    try {
+      const { X509Certificate } = require('crypto');
+      const pem = fs.readFileSync(ROOT_CA_PATH, 'utf8');
+      const x509 = new X509Certificate(pem);
+      const cn = x509.subject.split('\n').find(l => l.startsWith('CN='))?.replace('CN=', '') || null;
+      res.json({
+        subject:  cn,
+        notAfter: new Date(x509.validTo).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+        serial:   x509.serialNumber,
+      });
+    } catch (e) {
+      res.status(500).json({ status: 'error', message: e.message });
+    }
+  });
+
+  app.get('/api/cert/root/download', (_req, res) => {
+    if (!fs.existsSync(ROOT_CA_PATH)) {
+      return res.status(404).json({ status: 'error', message: 'ルート証明書が見つかりません' });
+    }
+    res.setHeader('Content-Disposition', 'attachment; filename="root_ca.crt"');
+    res.setHeader('Content-Type', 'application/x-pem-file');
+    fs.createReadStream(ROOT_CA_PATH).pipe(res);
   });
 };

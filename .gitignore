@@ -7,3 +7,6 @@ front/dist/
 # TLS証明書 (秘密鍵・サーバ証明書)
 cert/*.crt
 cert/*.key
+
+# 発行済み証明書
+data/

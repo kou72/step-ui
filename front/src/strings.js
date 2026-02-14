@@ -3,16 +3,20 @@ export const S = {
 
   // カード見出し
   page: {
-    ca:     'CA',
-    cert:   '証明書',
-    init:   'CA初期化',
+    ca:        'CA',
+    cert:      '証明書',
+    init:      'CA初期化',
+    certIssue: '証明書発行',
   },
 
   // ボタン
   btn: {
-    initOpen: '初期化',
-    init:     'CA初期化',
-    initing:  '初期化中…',
+    initOpen:    '初期化',
+    init:        'CA初期化',
+    initing:     '初期化中…',
+    certIssue:   '発行',
+    certSubmit:  '証明書を発行',
+    certIssuing: '発行中…',
   },
 
   // ステータスバッジ
@@ -71,7 +75,37 @@ export const S = {
 
   // 証明書ページ
   cert: {
-    placeholder: '証明書発行機能は準備中です',
+    empty:    '発行済みの証明書はありません',
+    subject:  'サブジェクト (CN)',
+    san:      'SAN (カンマ区切り)',
+    duration: '有効期間',
+    ph: {
+      subject:  'myserver',
+      san:      '192.168.11.143',
+      duration: '24h',
+    },
+    err: {
+      required: 'サブジェクトと SAN を入力してください',
+      generic:  '証明書の発行中にエラーが発生しました',
+    },
+    table: {
+      subject:  'サブジェクト',
+      san:      'SAN',
+      expiry:   '有効期限',
+      download: 'DL',
+      action:   '',
+    },
+    deleteConfirm: 'この証明書を削除しますか？',
+  },
+
+  // ルート証明書パネル
+  rootCert: {
+    title:    'ルート証明書',
+    subject:  'サブジェクト',
+    expiry:   '有効期限',
+    serial:   'シリアル',
+    download: 'ダウンロード',
+    empty:    'ルート証明書が見つかりません',
   },
 
   // アクセシビリティ (aria-label)

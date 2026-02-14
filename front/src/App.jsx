@@ -8,7 +8,7 @@ const RefreshIcon = () => (
   </svg>
 )
 import { ThemeProvider, useTheme } from './theme/ThemeContext'
-import { Card, StatusBadge, ConfigPanel, InitPanel, Button, SideBar, LogPanel } from './components'
+import { Card, StatusBadge, ConfigPanel, InitPanel, Button, SideBar, LogPanel, CertForm, CertTable, RootCertPanel } from './components'
 import { Modal } from './components/Modal'
 import { S } from './strings'
 
@@ -194,17 +194,97 @@ function StatusPage() {
 
 function CertPage() {
   const { dark } = useTheme()
+  const [certs,      setCerts]      = useState([])
+  const [rootCert,   setRootCert]   = useState(null)
+  const [loading,    setLoading]    = useState(false)
+  const [issueOpen,  setIssueOpen]  = useState(false)
+  const [issueError, setIssueError] = useState(null)
+
+  const fetchCerts = async () => {
+    try {
+      const res  = await fetch('/api/cert/list')
+      const json = await res.json()
+      setCerts(json.certs ?? [])
+    } catch {}
+  }
+
+  const fetchRootCert = async () => {
+    try {
+      const res  = await fetch('/api/cert/root')
+      const json = await res.json()
+      if (json.status !== 'error') setRootCert(json)
+    } catch {}
+  }
+
+  const issueCert = async (fields) => {
+    setLoading(true)
+    setIssueError(null)
+    try {
+      const res  = await fetch('/api/cert/issue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fields),
+      })
+      const json = await res.json()
+      if (json.status === 'ok') {
+        setIssueOpen(false)
+        fetchCerts()
+      } else {
+        setIssueError(json.message)
+      }
+    } catch {
+      setIssueError(S.cert.err.generic)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const deleteCert = async (id, subject) => {
+    if (!confirm(S.cert.deleteConfirm)) return
+    try {
+      const res  = await fetch(`/api/cert/${id}`, { method: 'DELETE' })
+      const json = await res.json()
+      if (json.status === 'ok') fetchCerts()
+    } catch {}
+  }
+
+  const handleDownload = (id, type) => {
+    window.open(`/api/cert/download/${id}/${type}`, '_blank')
+  }
+
+  const downloadRootCert = () => {
+    window.open('/api/cert/root/download', '_blank')
+  }
+
+  useEffect(() => { fetchCerts(); fetchRootCert() }, [])
+
   return (
     <div className={`${dark ? 'dark' : ''} bg-slate-200 dark:bg-slate-900 min-h-screen flex justify-center items-start pt-16 pl-24 pr-4 pb-8`}>
       <SideBar />
-      <Card>
-        <h1 className="text-lg font-semibold text-slate-700 dark:text-slate-200 tracking-wide">
-          {S.page.cert}
-        </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
-          {S.cert.placeholder}
-        </p>
-      </Card>
+      <div className="flex flex-col gap-4">
+        <Card>
+          <h2 className="text-lg font-semibold text-slate-700 dark:text-slate-200 tracking-wide mb-3">
+            {S.rootCert.title}
+          </h2>
+          <RootCertPanel rootCert={rootCert} onDownload={downloadRootCert} />
+        </Card>
+
+        <Card>
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-lg font-semibold text-slate-700 dark:text-slate-200 tracking-wide">
+              {S.page.cert}
+            </h1>
+            <Button small onClick={() => { setIssueError(null); setIssueOpen(true) }}>
+              {S.btn.certIssue}
+            </Button>
+          </div>
+          <CertTable certs={certs} onDownload={handleDownload} onDelete={deleteCert} />
+        </Card>
+      </div>
+
+      <Modal open={issueOpen} onClose={() => setIssueOpen(false)} title={S.page.certIssue}>
+        <CertForm onSubmit={issueCert} loading={loading} error={issueError} />
+      </Modal>
     </div>
   )
 }
