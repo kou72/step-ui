@@ -32,7 +32,7 @@ export function RootCertPanel({ rootCert, onDownload }) {
         onClick={onDownload}
         className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-700 px-3 py-1.5 rounded-xl
                    text-slate-600 dark:text-slate-300 text-xs font-medium
-                   transition-all duration-150 active:scale-[0.97] shrink-0"
+                   transition-all duration-150 active:scale-[0.97] shrink-0 cursor-pointer"
         style={{ boxShadow: SHADOW_OUT }}
       >
         <DownloadIcon />

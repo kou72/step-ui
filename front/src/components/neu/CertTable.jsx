@@ -54,18 +54,18 @@ export function CertTable({ certs, onDownload, onDelete }) {
               <td className="py-2 text-center">
                 <div className="flex justify-center gap-2">
                   <button onClick={() => onDownload(c.id, 'crt')} title="証明書"
-                    className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 transition-colors">
+                    className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 transition-colors cursor-pointer">
                     <DownloadIcon />
                   </button>
                   <button onClick={() => onDownload(c.id, 'key')} title="秘密鍵"
-                    className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 transition-colors">
+                    className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 transition-colors cursor-pointer">
                     <KeyIcon />
                   </button>
                 </div>
               </td>
               <td className="py-2 text-center">
                 <button onClick={() => onDelete(c.id, c.subject)} title="削除"
-                  className="text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 transition-colors">
+                  className="text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 transition-colors cursor-pointer">
                   <TrashIcon />
                 </button>
               </td>

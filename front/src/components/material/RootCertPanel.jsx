@@ -32,7 +32,7 @@ export function RootCertPanel({ rootCert, onDownload }) {
         className="flex items-center gap-1.5 bg-blue-500 dark:bg-blue-600 px-3 py-1.5 rounded-lg
                    text-white text-xs font-medium
                    hover:bg-blue-600 dark:hover:bg-blue-500 transition-colors
-                   active:scale-[0.97] shrink-0"
+                   active:scale-[0.97] shrink-0 cursor-pointer"
       >
         <DownloadIcon />
         {S.rootCert.download}
