@@ -1,15 +1,13 @@
-badger 2026/02/14 04:22:28 INFO: All 1 tables opened in 1ms
-badger 2026/02/14 04:22:28 INFO: Replaying file id: 0 at offset: 17656
-badger 2026/02/14 04:22:28 INFO: Replay took: 61µs
-2026/02/14 04:22:28 Building new tls configuration using step-ca x509 Signer Interface
-2026/02/14 04:22:28 Starting Smallstep CA/0.29.0 (linux/amd64)
-2026/02/14 04:22:28 Documentation: https://u.step.sm/docs/ca
-2026/02/14 04:22:28 Community Discord: https://u.step.sm/discord
-2026/02/14 04:22:28 Config file: /home/mgmt/.step/config/ca.json
-2026/02/14 04:22:28 The primary server URL is https://192.168.11.143:443
-2026/02/14 04:22:28 Root certificates are available at https://192.168.11.143:443/roots.pem
-2026/02/14 04:22:28 X.509 Root Fingerprint: 0498562e00105b36eca4ab18f1af78deec2cc9fb96505ed5cc2d71fe73140f95
-2026/02/14 04:22:28 Serving HTTPS on 0.0.0.0:443 ...
-time="2026-02-14T04:22:30Z" level=info duration="21.821µs" duration-ns=21821 fields.time="2026-02-14T04:22:30Z" method=GET name=ca path=/health protocol=HTTP/1.1 referer= remote-address=192.168.11.143 request-id=e300a7a8-a5a6-4af5-b7df-8a77b6707234 size=16 status=200 user-agent= user-id=
-time="2026-02-14T04:22:32Z" level=info duration="11.673µs" duration-ns=11673 fields.time="2026-02-14T04:22:32Z" method=GET name=ca path=/health protocol=HTTP/1.1 referer= remote-address=192.168.11.143 request-id=9c0bc880-be7b-4123-b396-efc39535a353 size=16 status=200 user-agent= user-id=
-time="2026-02-14T04:22:35Z" level=info duration="11.965µs" duration-ns=11965 fields.time="2026-02-14T04:22:35Z" method=GET name=ca path=/health protocol=HTTP/1.1 referer= remote-address=192.168.11.143 request-id=e98081ec-985e-4d48-a172-a6ea2301295e size=16 status=200 user-agent= user-id=
+badger 2026/02/14 05:02:34 INFO: All 1 tables opened in 1ms
+badger 2026/02/14 05:02:34 INFO: Replaying file id: 0 at offset: 30573
+badger 2026/02/14 05:02:34 INFO: Replay took: 2.501µs
+2026/02/14 05:02:34 Building new tls configuration using step-ca x509 Signer Interface
+2026/02/14 05:02:34 Starting Smallstep CA/0.29.0 (linux/amd64)
+2026/02/14 05:02:34 Documentation: https://u.step.sm/docs/ca
+2026/02/14 05:02:34 Community Discord: https://u.step.sm/discord
+2026/02/14 05:02:34 Config file: /home/mgmt/.step/config/ca.json
+2026/02/14 05:02:34 The primary server URL is https://192.168.11.143:443
+2026/02/14 05:02:34 Root certificates are available at https://192.168.11.143:443/roots.pem
+2026/02/14 05:02:34 X.509 Root Fingerprint: 0498562e00105b36eca4ab18f1af78deec2cc9fb96505ed5cc2d71fe73140f95
+2026/02/14 05:02:34 Serving HTTPS on 0.0.0.0:443 ...
+time="2026-02-14T05:02:36Z" level=info duration="22.072µs" duration-ns=22072 fields.time="2026-02-14T05:02:36Z" method=GET name=ca path=/health protocol=HTTP/1.1 referer= remote-address=192.168.11.143 request-id=076a729b-d9be-4684-a91f-8abce3b51fcd size=16 status=200 user-agent= user-id=

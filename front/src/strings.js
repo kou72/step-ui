@@ -21,7 +21,7 @@ export const S = {
 
   // ステータスバッジ
   badge: {
-    loading: '取得中…',
+    loading: '取得中',
     ok:      '起動中',
     error:   '停止中',
   },

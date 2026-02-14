@@ -34,40 +34,59 @@ function StatusPage() {
     }
   }
 
+  // 状態が変わるまでポーリング (2秒間隔、最大30秒)
+  const pollUntilChanged = (prevStatus) => {
+    const MAX = 15
+    let count = 0
+    const tick = async () => {
+      count++
+      try {
+        const res  = await fetch('/api/status')
+        const json = await res.json()
+        const next = json.status === 'ok' ? 'ok' : 'error'
+        if (next !== prevStatus || count >= MAX) {
+          setStatus(next)
+          return
+        }
+      } catch {
+        if (count >= MAX) { setStatus('error'); return }
+      }
+      setTimeout(tick, 2000)
+    }
+    setTimeout(tick, 2000)
+  }
+
   const stopCA = async () => {
-    setLoading(true)
+    const prev = status
+    setStatus('loading')
     try {
       const res  = await fetch('/api/ca/stop', { method: 'POST' })
       const json = await res.json()
       if (json.status === 'stopped' || json.status === 'not_running') {
-        await fetchStatus()
+        pollUntilChanged(prev)
       } else {
         setStatus('error')
       }
     } catch {
       setStatus('error')
-    } finally {
-      setLoading(false)
     }
   }
 
   const startCA = async () => {
-    setLoading(true)
+    const prev = status
+    setStatus('loading')
     try {
       const res  = await fetch('/api/ca/start', { method: 'POST' })
       const json = await res.json()
       if (json.status === 'already_running') {
-        await fetchStatus()
+        setStatus('ok')
       } else if (json.status === 'starting') {
-        setStatus('loading')
-        pollStatus()
+        pollUntilChanged(prev)
       } else {
         setStatus('error')
       }
     } catch {
       setStatus('error')
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -112,12 +131,6 @@ function StatusPage() {
       const json = await res.json()
       setLogs(json.lines ?? [])
     } catch {}
-  }
-
-  // アクション後に最大 n 回ポーリング (2秒間隔)
-  const pollStatus = (n = 3) => {
-    if (n <= 0) return
-    setTimeout(async () => { await fetchStatus(); pollStatus(n - 1) }, 2000)
   }
 
   const toggleCA = () => {
