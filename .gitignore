@@ -1,6 +1,6 @@
 node_modules/
 package-lock.json
-*.log
+**/*.log
 
 # ビルド成果物
 front/dist/
