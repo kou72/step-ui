@@ -122,7 +122,7 @@ HMR によりソース変更が即座に反映される。
 | `/api/ca/stop` | POST | step-ca を停止する。未起動なら `404 not_running` |
 | `/api/ca/init` | POST | step-ca を初期化する |
 
-## リリース
+## ビルド
 
 ```bash
 npm install
@@ -141,6 +141,7 @@ sudo loginctl enable-linger $(whoami)
 
 ```bash
 nohup node server.js > step-ui.log 2>&1 &
+disown
 ```
 
 - HTTPS: `https://0.0.0.0:3000`
